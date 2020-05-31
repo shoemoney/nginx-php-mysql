@@ -68,7 +68,7 @@ services:
     container_name: composer-web1
     volumes:
       - "./www/web1/app:/app"
-    command: install --no-interaction --optimize-autoloader --verbose
+    command: composer install --no-interaction --optimize-autoloader --verbose
 
   #composer-web2:
   #  build:
@@ -76,7 +76,7 @@ services:
   #      dockerfile: Dockerfile
   #  volumes:
   #    - "./www/web2/app:/app"
-  #  command: install --no-interaction --optimize-autoloader
+  #  command: composer install --no-interaction --optimize-autoloader
 
   # web3, 4, ...
 
