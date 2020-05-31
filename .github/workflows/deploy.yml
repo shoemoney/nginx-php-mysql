@@ -18,7 +18,7 @@ env:
   PHP_PARAMS: ${{ secrets.PHP_PARAMS }}
   SERVER_KEY: ${{ secrets.SERVER_KEY }}
   SERVER_PEM: ${{ secrets.SERVER_PEM }}
-  TARGET: "~/${{github.repository}}"
+  TARGET: "/home/github/${{github.repository}}"
 
 jobs:
   deploy:
