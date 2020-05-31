@@ -1,6 +1,7 @@
-mysql/init
+mysql/init/*.sql
+mysql/init/*.sh
 mysql/data
-nginx/conf.d
+nginx/conf.d/*.conf
 nginx/ssl
 
 .idea
