@@ -69,10 +69,14 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           envs: PMA_ABSOLUTE_URI, MYSQL_HOST, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
-            echo $MYSQL_DUMPS_DIR &&
+            echo $MYSQL_DUMPS_DIR, $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
-            (docker exec $(shell docker-compose ps -q mysql) mysqldump --all-databases -u"root" -p"$(MYSQL_ROOT_PASSWORD)" > $(MYSQL_DUMPS_DIR)/all_backups.sql 2>/dev/null || TRUE)
+            export PMA_ABSOLUTE_URI=$PMA_ABSOLUTE_URI &&
+            export MYSQL_HOST=$MYSQL_HOST &&
+            export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
+            chmod -R 777 $MYSQL_DUMPS_DIR/ &&
+            (docker exec $(shell docker-compose ps -q mysql) mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || TRUE)
             docker-compose build --no-cache &&
             docker-compose rm -f -s &&
             docker-compose up --renew-anon-volumes -d &&
-            (docker exec -i $(shell docker-compose ps -q mysql) mysql -u"root" -p"$(MYSQL_ROOT_PASSWORD)" < $(MYSQL_DUMPS_DIR)/all_backups.sql 2>/dev/null || TRUE)
+            (docker exec -i $(shell docker-compose ps -q mysql) mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || TRUE)
