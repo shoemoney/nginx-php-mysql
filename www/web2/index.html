@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <style>
+    </style>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+    <title>chat</title>
+
+</head>
+<body>
+Hello Web2
+
+<div id=data>
+
+<script>
+    // code for IE6, IE5
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp =new XMLHttpRequest();
+    } else {//
+        xmlhttp =new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {//received full server response and check the server response
+            document.getElementById("data").innerHTML=" ";
+            document.getElementById("data").innerHTML=this.responseText;
+        }
+    };
+    xmlhttp.open("GET", "php/index.php", true);
+    xmlhttp.send();
+</script>
+</body>
+</html>

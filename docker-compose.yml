@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    working_dir: /var/www/html
+    volumes:
+      - "./www:/var/www/html"
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    depends_on:
+      - php
+      - mysql
+      - phpmyadmin
+    external_links:
+      - phpmyadmin
+      - mysql
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: php
+    working_dir: /var/www/html
+    restart: unless-stopped
+    volumes:
+      - "./www:/var/www/html"
+
+  phpmyadmin:
+    build:
+      context: ./phpmyadmin
+      dockerfile: Dockerfile
+    container_name: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=${MYSQL_HOST}
+      - PMA_ABSOLUTE_URI=${PMA_ABSOLUTE_URI}
+    restart: unless-stopped
+    depends_on:
+      - mysql
+
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    container_name: ${MYSQL_HOST}
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - "./mysql/init/:/docker-entrypoint-initdb.d/"
+    ports:
+      - "3306:3306"
+
+  # install modules for codeigniter
+  composer-web1:
+    build:
+      context: ./composer
+      dockerfile: Dockerfile
+    container_name: composer-web1
+    volumes:
+      - "./www/web1/app:/app"
+    command: install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader
+
+  #composer-web2:
+  #  build:
+  #      context: ./composer
+  #      dockerfile: Dockerfile
+  #  volumes:
+  #    - "./www/web2/app:/app"
+  #  command: install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader
+
+  # web3, 4, ...
+
+

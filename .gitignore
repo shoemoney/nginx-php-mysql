@@ -1,0 +1,7 @@
+mysql/init
+mysql/data
+nginx/conf.d
+nginx/ssl
+
+.idea
+.env
