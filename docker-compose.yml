@@ -56,6 +56,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - "./mysql/init/:/docker-entrypoint-initdb.d/"
     ports:
       - "3306:3306"
@@ -67,16 +68,14 @@ services:
       dockerfile: Dockerfile
     container_name: composer-web1
     volumes:
-      - "./www/web1/app:/app"
-    command: composer install --no-interaction --optimize-autoloader --verbose
+      - "./www/web1:/app"
 
   #composer-web2:
   #  build:
   #      context: ./composer
   #      dockerfile: Dockerfile
   #  volumes:
-  #    - "./www/web2/app:/app"
-  #  command: composer install --no-interaction --optimize-autoloader
+  #    - "./www/web2:/app"
 
   # web3, 4, ...
 
