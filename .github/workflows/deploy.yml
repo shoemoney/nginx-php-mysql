@@ -61,7 +61,7 @@ jobs:
       - name: Deploy on digitalocean
         uses: appleboy/ssh-action@master
         env:
-          MYSQL_DUMPS_DIR: "${TARGET}/mysql/backup"
+          MYSQL_DUMPS_DIR: "${{ TARGET }}/mysql/backup"
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
