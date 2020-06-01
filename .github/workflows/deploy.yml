@@ -111,7 +111,7 @@ jobs:
           script: |
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
-            (docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
+            (docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql || true)
 
       - name: Chmod on digitalocean
         uses: appleboy/ssh-action@master
