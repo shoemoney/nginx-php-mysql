@@ -69,7 +69,7 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
-            - echo $MYSQL_DUMPS_DIR/all_backups.sql &&
+            echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
             (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
@@ -105,7 +105,7 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
-            - echo $MYSQL_DUMPS_DIR/all_backups.sql &&
+            echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             (docker exec -it mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql > 2>/dev/null || true)
 
