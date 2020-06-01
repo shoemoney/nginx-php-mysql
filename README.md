@@ -26,6 +26,22 @@ id -nG
 docker --help
 ```
 
+### MySql
+```
+# install mysql
+sudo apt-get update
+sudo apt-get install -y mysql-server
+# view mysql status
+sudo systemctl status mysql
+
+# right for github user on mysql
+sudo usermod -aG mysql github
+# login to github
+su - github
+# check github in docker group
+id -nG
+```
+
 ### Github-runner
 [Repo github-runner docker](https://github.com/cross-the-world/github-runner)
 
@@ -49,12 +65,12 @@ docker run -it --name github-runner \
     -v /var/run/docker.sock:/var/run/docker.sock \
     thuong/github-runner:latest
 ```
-**Open** [Actions in organization](https://github.com/organizations/cross-the-world/settings/actions) and check whether runner is ready
+**Open** [https://github.com/organizations/name/settings/actions](https://github.com/organizations/name/settings/actions) and check whether runner is ready
 
 
 
 ## Secrets
-For each repository, 
+For each repository [https://github.com/repository_url/settings/secrets](https://github.com/repository_url/settings/secrets), 
 since free license can not extend secrets from organization.
 ```
 ## parameters to connect to server per ssh, scp

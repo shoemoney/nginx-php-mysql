@@ -1,8 +1,11 @@
 mysql/init/*.sql
 mysql/init/*.sh
 mysql/data
+mysql/backup/*.sql
 nginx/conf.d/*.conf
 nginx/ssl
 
 .idea
 .env
+
+/test.sh
