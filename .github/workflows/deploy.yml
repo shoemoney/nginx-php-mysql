@@ -74,7 +74,7 @@ jobs:
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
-            (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
+            (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null) || true
 
       - name: Deploy on digitalocean
         uses: appleboy/ssh-action@master
@@ -111,7 +111,7 @@ jobs:
           script: |
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
-            (docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql || true)
+            (docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < "$MYSQL_DUMPS_DIR/all_backups.sql") || true
 
       - name: Chmod on digitalocean
         uses: appleboy/ssh-action@master
@@ -125,4 +125,4 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           envs: TARGET
           script: |
-            (chmod -R 777 $TARGET/ || true)
+            (chmod -R 777 $TARGET/) || true
