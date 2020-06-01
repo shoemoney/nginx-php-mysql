@@ -58,6 +58,22 @@ jobs:
           rm -rf ./nginx/conf.d &&
           rm -rf ./nginx/ssl
 
+      - name: Backup database on digitalocean
+        uses: appleboy/ssh-action@master
+        env:
+          MYSQL_DUMPS_DIR: "${{ env.TARGET }}/mysql/backup"
+        with:
+          HOST: ${{ secrets.DC_HOST }}
+          USERNAME: ${{ secrets.DC_USER }}
+          PORT: ${{ secrets.DC_PORT }}
+          KEY: ${{ secrets.DC_KEY }}
+          envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
+          script: |
+            - echo $MYSQL_DUMPS_DIR/all_backups.sql &&
+            cd $TARGET &&
+            chmod -R 777 $MYSQL_DUMPS_DIR/ &&
+            (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
+
       - name: Deploy on digitalocean
         uses: appleboy/ssh-action@master
         env:
@@ -69,14 +85,27 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           envs: PMA_ABSOLUTE_URI, MYSQL_HOST, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
-            echo $MYSQL_DUMPS_DIR, $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             export PMA_ABSOLUTE_URI=$PMA_ABSOLUTE_URI &&
             export MYSQL_HOST=$MYSQL_HOST &&
             export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
-            chmod -R 777 $MYSQL_DUMPS_DIR/ &&
-            (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
+            export CURRENT_UID=$(id -u):$(id -g) &&
             docker-compose build --no-cache &&
             docker-compose rm -f -s &&
-            docker-compose up --renew-anon-volumes -d &&
-            ((cat $MYSQL_DUMPS_DIR/all_backups.sql | docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD") || true)
+            docker-compose up --renew-anon-volumes -d
+
+      - name: Restore database on digitalocean
+        uses: appleboy/ssh-action@master
+        env:
+          MYSQL_DUMPS_DIR: "${{ env.TARGET }}/mysql/backup"
+        with:
+          HOST: ${{ secrets.DC_HOST }}
+          USERNAME: ${{ secrets.DC_USER }}
+          PORT: ${{ secrets.DC_PORT }}
+          KEY: ${{ secrets.DC_KEY }}
+          envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
+          script: |
+            - echo $MYSQL_DUMPS_DIR/all_backups.sql &&
+            cd $TARGET &&
+            (docker exec -it mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql > 2>/dev/null || true)
+

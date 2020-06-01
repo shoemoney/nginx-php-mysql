@@ -67,6 +67,7 @@ services:
       context: ./composer
       dockerfile: Dockerfile
     container_name: composer-web1
+    user: ${CURRENT_UID}
     volumes:
       - "./www/web1:/app"
 
@@ -74,6 +75,7 @@ services:
   #  build:
   #      context: ./composer
   #      dockerfile: Dockerfile
+  #  user: ${CURRENT_UID}
   #  volumes:
   #    - "./www/web2:/app"
 
