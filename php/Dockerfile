@@ -13,7 +13,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 #RUN composer install --no-progress --no-suggest --no-interaction --prefer-dist --optimize-autoloader
 # ...
 
-#RUN usermod -u 1000 www-data
+RUN usermod -u 1000 www-data
 
 COPY ./php.ini /usr/local/etc/php/conf.d/php.ini
 
