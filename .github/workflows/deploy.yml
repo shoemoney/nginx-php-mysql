@@ -108,5 +108,5 @@ jobs:
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             (chmod -R 777 $TARGET/ || true) &&
-            (docker exec -it mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
+            (docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true)
 

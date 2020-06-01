@@ -29,3 +29,11 @@ MYSQL_ROOT_PASSWORD
 MYSQL_HOST
 ```
 
+## Install
+
+### Docker
+[Docker on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
+After that, allow docker run without sudo and add allowed users to docker group
+```
+
+```
