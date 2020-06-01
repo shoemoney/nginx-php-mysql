@@ -52,6 +52,7 @@ services:
       context: ./mysql
       dockerfile: Dockerfile
     container_name: ${MYSQL_HOST}
+    user: ${CURRENT_UID}
     restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
