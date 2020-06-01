@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo $1, $2
+echo "Restoring..."
 
 mysql_running=$( docker inspect -f '{{.State.Running}}' mysql )
 count=180
@@ -12,5 +12,7 @@ do
 	count=$((count - 1))
 done
 
-(docker exec -i mysql /usr/bin/mysql -u"root" -p"$1" < "$2") || true
+echo "From path $2 ..."
+$( docker exec -i mysql /usr/bin/mysql -u"root" -p"$1" < "$2" )
 
+echo "Restored!!!"
