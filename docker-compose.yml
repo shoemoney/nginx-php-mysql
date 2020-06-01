@@ -7,6 +7,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile
     container_name: nginx
+    user: ${CURRENT_UID}
     working_dir: /var/www/html
     volumes:
       - "./www:/var/www/html"
@@ -27,6 +28,7 @@ services:
       context: ./php
       dockerfile: Dockerfile
     container_name: php
+    user: ${CURRENT_UID}
     working_dir: /var/www/html
     restart: unless-stopped
     volumes:
@@ -37,6 +39,7 @@ services:
       context: ./phpmyadmin
       dockerfile: Dockerfile
     container_name: phpmyadmin
+    user: ${CURRENT_UID}
     ports:
       - "8080:80"
     environment:
@@ -52,6 +55,7 @@ services:
       context: ./mysql
       dockerfile: Dockerfile
     container_name: ${MYSQL_HOST}
+    user: ${CURRENT_UID}
     restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
