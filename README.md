@@ -26,22 +26,6 @@ id -nG
 docker --help
 ```
 
-### MySql
-```
-# install mysql
-sudo apt-get update
-sudo apt-get install -y mysql-server
-# view mysql status
-sudo systemctl status mysql
-
-# right for github user on mysql
-sudo usermod -aG mysql github
-# login to github
-su - github
-# check github in docker group
-id -nG
-```
-
 ### Github-runner
 [Repo github-runner docker](https://github.com/cross-the-world/github-runner)
 
@@ -337,9 +321,11 @@ Under "./.github/worflows/deploy.yml"
     * Build: "docker-compose build --no-cache"                                                  
     * Remove: "docker-compose rm -f -s"
     * Create: "docker-compose up --renew-anon-volumes -d"
+* Allow permisson on target directory in server
+    * TARGET: ~/[organization]/[repo name]
+    * RESTORE_SCRIPT: TARGET/wait_for_restore.sh
 * Restore all backup database to the new mysql container
     * SOURCE: ~/[organization]/[repo name]/mysql/backup/all_backup.sql
     * CMD: "docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true"
-* Allow permisson on target directory in server
-    * TARGET: ~/[organization]/[repo name]
+
     

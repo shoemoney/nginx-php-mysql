@@ -11,6 +11,9 @@ env:
   RUNID: ${{ github.run_id }}
   RUNNR: ${{ github.run_number }}
   MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+  MYSQL_IP: 0.0.0.0
+  MYSQL_PORT: 3306
+  MYSQL_USER: root
   MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
   PMA_ABSOLUTE_URI: ${{ secrets.PMA_ABSOLUTE_URI }}
   MYSQL_INIT: ${{ secrets.MYSQL_INIT }}
@@ -69,12 +72,12 @@ jobs:
           PORT: ${{ secrets.DC_PORT }}
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
-          envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
+          envs: MYSQL_IP, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
-            (docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null)
+            (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null)
 
       - name: Deploy on digitalocean
         uses: appleboy/ssh-action@master
@@ -99,6 +102,21 @@ jobs:
             docker-compose rm -f -s &&
             docker-compose up --renew-anon-volumes -d
 
+      - name: Chmod on digitalocean
+        uses: appleboy/ssh-action@master
+        env:
+          MYSQL_DUMPS_DIR: "${{ env.TARGET }}/mysql/backup"
+        with:
+          HOST: ${{ secrets.DC_HOST }}
+          USERNAME: ${{ secrets.DC_USER }}
+          PORT: ${{ secrets.DC_PORT }}
+          KEY: ${{ secrets.DC_KEY }}
+          #PASSWORD: ${{ secrets.DC_PASS }}
+          envs: TARGET
+          script: |
+            ((chmod -R 777 $TARGET/) || true) &&
+            ((chmod +x $TARGET/wait_for_restore.sh) || true)
+
       - name: Restore database on digitalocean
         uses: appleboy/ssh-action@master
         env:
@@ -109,10 +127,8 @@ jobs:
           PORT: ${{ secrets.DC_PORT }}
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
-          envs: MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
+          envs: MYSQL_IP, MYSQL_PORT, MYSQL_USER, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
-            ((chmod -R 777 $TARGET/) || true) &&
-            ((chmod +x $TARGET/restore_db.sh) || true) &&
             cd $TARGET &&
-            $TARGET/restore_db.sh $MYSQL_ROOT_PASSWORD "$MYSQL_DUMPS_DIR/all_backups.sql"
+            $TARGET/restore_db.sh $MYSQL_IP MYSQL_PORT MYSQL_USER $MYSQL_ROOT_PASSWORD "$MYSQL_DUMPS_DIR/all_backups.sql"
 
