@@ -127,7 +127,7 @@ jobs:
             docker-compose build --no-cache &&
             cd $TARGET &&
             (docker-compose rm -f -s || true) &&
-            rm -rf . &&
+            rm -rf ./* &&
             mv $TMP_DIR $TARGET
             docker-compose up --renew-anon-volumes -d &&
             rm -rf $TMP_DIR
