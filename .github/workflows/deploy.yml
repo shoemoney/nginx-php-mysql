@@ -35,6 +35,7 @@ jobs:
           CONFIG_JSON: ${{ secrets.CONFIG_JSON }}
         run: |
           echo "$REPO, $REPO_URL, $MYSQL_HOST, $PMA_ABSOLUTE_URI, $TARGET" &&
+          ls -la ./ &&
           mkdir -p ./mysql/init &&
           echo "$MYSQL_INIT" > ./mysql/init/init.sql &&
           echo "$MYSQL_TEST" > ./mysql/init/test.sh &&
