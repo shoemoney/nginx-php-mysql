@@ -330,6 +330,7 @@ Under "./.github/worflows/deploy.yml"
     * TARGET: ~/[organization]/[repo name]/mysql/backup
     * CMD: "docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true"
 * Generate configs
+    * GENERATE_SCRIPT: TARGET/generate_configs.sh
     * ssl/sites/ssl.json -> ssl/sites/[site]/server.[pem|key]
     * conf.d/sites/auth.json -> conf.d/sites/.[site]passwd
 * Deploy new docker containers
@@ -338,8 +339,8 @@ Under "./.github/worflows/deploy.yml"
     * Create: "docker-compose up --renew-anon-volumes -d"
 * Allow permisson on target directory in server
     * TARGET: ~/[organization]/[repo name]
-    * RESTORE_SCRIPT: TARGET/wait_for_restore.sh
 * Restore all backup database to the new mysql container
+    * RESTORE_SCRIPT: TARGET/wait_for_restore.sh
     * SOURCE: ~/[organization]/[repo name]/mysql/backup/all_backup.sql
     * CMD: "docker exec -i mysql /usr/bin/mysql -u"root" -p"$MYSQL_ROOT_PASSWORD" < $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true"
 
