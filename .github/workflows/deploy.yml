@@ -91,7 +91,8 @@ jobs:
           script: |
             ((chmod -R 777 $TARGET/) || true) &&
             ((chmod +x $TARGET/generate_configs.py) || true) &&
-            python generate_configs.py
+            python3 --version &&
+            python3 generate_configs.py
 
       - name: Deploy on digitalocean
         uses: appleboy/ssh-action@master
