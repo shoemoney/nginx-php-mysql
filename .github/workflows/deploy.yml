@@ -55,7 +55,7 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           envs: TMP_DIR
           script: |
-            mkdir -p $TMPDIR &&
+            mkdir -p $TMP_DIR &&
             ((chmod -R 777 $TMP_DIR/) || true)
 
       - name: Copy to DigitalOcean
