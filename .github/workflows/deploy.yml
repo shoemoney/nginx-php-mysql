@@ -91,7 +91,7 @@ jobs:
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
             cd $TARGET &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
-            (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null)
+            (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null || true)
 
       - name: Generate configs on digitalocean
         uses: appleboy/ssh-action@master
