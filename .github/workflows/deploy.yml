@@ -45,6 +45,19 @@ jobs:
           mkdir -p ./nginx/ssl/sites &&
           echo "$SSL" > ./nginx/ssl/sites/ssl.json
 
+      - name: Create tmp dir on digitalocean
+        uses: appleboy/ssh-action@master
+        with:
+          HOST: ${{ secrets.DC_HOST }}
+          USERNAME: ${{ secrets.DC_USER }}
+          PORT: ${{ secrets.DC_PORT }}
+          KEY: ${{ secrets.DC_KEY }}
+          #PASSWORD: ${{ secrets.DC_PASS }}
+          envs: TMP_DIR
+          script: |
+            mkdir -p $TMPDIR &&
+            ((chmod -R 777 $TMP_DIR/) || true)
+
       - name: Copy to DigitalOcean
         uses: appleboy/scp-action@master
         with:
