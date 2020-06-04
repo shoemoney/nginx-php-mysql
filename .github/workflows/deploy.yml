@@ -22,7 +22,7 @@ env:
   SSL: ${{ secrets.SSL }}
   SITE_AUTH: ${{ secrets.SITE_AUTH }}
   TARGET: "/home/github/${{github.repository}}"
-  TARGET_TMP: "/home/github/tmp/${{github.repository}}"
+  TMP_DIR: "/home/github/tmp/${{github.repository}}"
 
 jobs:
   deploy:
@@ -54,8 +54,7 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
           source: "."
-          target: $TARGET_TMP
-          tar_tmp_path: $TARGET_TMP
+          target: ${{ env.TMP_DIR }}
 
       - name: Clear raw config files
         shell: bash
@@ -67,7 +66,7 @@ jobs:
       - name: Backup database on digitalocean
         uses: appleboy/ssh-action@master
         env:
-          MYSQL_DUMPS_DIR: "${{ env.TARGET_TMP }}/mysql/backup"
+          MYSQL_DUMPS_DIR: "${{ env.TMP_DIR }}/mysql/backup"
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -89,10 +88,10 @@ jobs:
           PORT: ${{ secrets.DC_PORT }}
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
-          envs: TARGET_TMP
+          envs: TMP_DIR
           script: |
-            ((chmod -R 777 $TARGET_TMP/) || true) &&
-            ((chmod +x $TARGET_TMP/generate_configs.py) || true) &&
+            ((chmod -R 777 $TMP_DIR/) || true) &&
+            ((chmod +x $TMP_DIR/generate_configs.py) || true) &&
             python3 --version &&
             python3 generate_configs.py
 
@@ -104,9 +103,9 @@ jobs:
           PORT: ${{ secrets.DC_PORT }}
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
-          envs: PMA_ABSOLUTE_URI, MYSQL_HOST, MYSQL_ROOT_PASSWORD, TARGET_TMP, TARGET
+          envs: PMA_ABSOLUTE_URI, MYSQL_HOST, MYSQL_ROOT_PASSWORD, TMP_DIR, TARGET
           script: |
-            cd $TARGET_TMP &&
+            cd $TMP_DIR &&
             export PMA_ABSOLUTE_URI=$PMA_ABSOLUTE_URI &&
             export MYSQL_HOST=$MYSQL_HOST &&
             export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
@@ -115,9 +114,9 @@ jobs:
             cd $TARGET &&
             docker-compose rm -f -s &&
             rm -rf . &&
-            mv $TARGET_TMP $TARGET
+            mv $TMP_DIR $TARGET
             docker-compose up --renew-anon-volumes -d &&
-            rm -rf $TARGET_TMP
+            rm -rf $TMP_DIR
 
       - name: Chmod on digitalocean
         uses: appleboy/ssh-action@master
