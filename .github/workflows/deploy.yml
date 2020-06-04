@@ -67,7 +67,8 @@ jobs:
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
           source: "."
-          target: ${{ env.TMP_DIR }}
+          target: "/home/github/tmp/${{github.repository}}"
+          override: true
 
       - name: Clear raw config files
         shell: bash
