@@ -67,7 +67,7 @@ jobs:
           privateKey: ${{ secrets.DC_KEY }}
           #password: ${{ secrets.DC_PASS }}
           local: "."
-          remote: $TMP_DIR
+          remote: ${{ env.TMP_DIR }}
 
       - name: Clear raw config files
         shell: bash
