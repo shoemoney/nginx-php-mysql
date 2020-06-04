@@ -127,10 +127,10 @@ jobs:
             docker-compose build --no-cache &&
             cd $TARGET &&
             (docker-compose rm -f -s || true) &&
-            rm -rf ./* &&
-            mv $TMP_DIR $TARGET
+            (rm -rf ./* || true) &&
+            mv $TMP_DIR $TARGET &&
             docker-compose up --renew-anon-volumes -d &&
-            rm -rf $TMP_DIR
+            (rm -rf $TMP_DIR || true)
 
       - name: Chmod on digitalocean
         uses: appleboy/ssh-action@master
