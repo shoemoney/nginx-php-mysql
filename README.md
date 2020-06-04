@@ -3,6 +3,20 @@
 
 ## Pre-Install
 
+### Python 
+[Install guide](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-programming-environment-on-an-ubuntu-20-04-server)
+```
+sudo apt-get update && sudo apt-get -y upgrade
+
+# check python version
+python3 --version
+
+# basic packages
+sudo apt install -y python3-pip
+sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
+
+```
+
 ### Docker
 [Docker on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
 
@@ -66,10 +80,9 @@ DC_KEY
 #DC_PASS
 
 ## certificates to support https
-#written to ./nginx/ssl/server.pem, mount to nginx-container /etc/nginx/ssl/server.pem
-SERVER_PEM 
-#written to ./nginx/ssl/server.key, mount to nginx-container /etc/nginx/ssl/server.key
-SERVER_KEY 
+#written to ./nginx/ssl/[site]/server.pem, mount to nginx-container /etc/nginx/ssl/*
+#written to ./nginx/ssl/[site]/server.key, mount to nginx-container /etc/nginx/ssl/*
+SSL 
 
 ## php mysql config
 # written to ./nginx/conf.d/credentials.conf, mount to nginx-container /etc/nginx/conf.d/
@@ -80,10 +93,9 @@ PHP_PARAMS
 PMA_ABSOLUTE_URI
 
 ## basic auth before opening site
-# written to ./nginx/conf.d/*, mount to nginx-container /etc/nginx/conf.d/
-#using on loading site A with basic auth
+# written to ./nginx/conf.d/.[site]passwd, mount to nginx-container /etc/nginx/conf.d/
+#using on loading site with basic auth
 SITE_AUTH_A 
-#using on loading site B with basic auth
 SITE_AUTH_B 
 # ...
 
@@ -317,6 +329,9 @@ Under "./.github/worflows/deploy.yml"
 * Backup all database from mysql container
     * TARGET: ~/[organization]/[repo name]/mysql/backup
     * CMD: "docker exec mysql /usr/bin/mysqldump --all-databases -u"root" -p"$MYSQL_ROOT_PASSWORD" > $MYSQL_DUMPS_DIR/all_backups.sql 2>/dev/null || true"
+* Generate configs
+    * ssl/sites/ssl.json -> ssl/sites/[site]/server.[pem|key]
+    * conf.d/sites/auth.json -> conf.d/sites/.[site]passwd
 * Deploy new docker containers
     * Build: "docker-compose build --no-cache"                                                  
     * Remove: "docker-compose rm -f -s"
