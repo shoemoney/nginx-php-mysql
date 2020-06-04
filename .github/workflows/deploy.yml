@@ -55,6 +55,7 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           source: "."
           target: $TARGET_TMP
+          tar_tmp_path: $TARGET_TMP
 
       - name: Clear raw config files
         shell: bash
