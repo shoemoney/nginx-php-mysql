@@ -103,6 +103,7 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           envs: TMP_DIR
           script: |
+            cd $TMP_DIR &&
             ((chmod -R 777 $TMP_DIR/) || true) &&
             ((chmod +x $TMP_DIR/generate_configs.py) || true) &&
             python3 --version &&
