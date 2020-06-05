@@ -39,11 +39,11 @@ jobs:
           mkdir -p ./mysql/init &&
           echo "$MYSQL_INIT" > ./mysql/init/init.sql &&
           echo "$MYSQL_TEST" > ./mysql/init/test.sh &&
-          mkdir -p ./nginx/conf.d/sites &&
+          mkdir -p ./nginx/conf.d/wsites &&
           echo "$PHP_PARAMS" > ./nginx/conf.d/credentials.conf &&
-          echo "$SITE_AUTH" > ./nginx/conf.d/sites/auth.json &&
-          mkdir -p ./nginx/ssl/sites &&
-          echo "$SSL" > ./nginx/ssl/sites/ssl.json
+          echo "$SITE_AUTH" > ./nginx/conf.d/wsites/auth.json &&
+          mkdir -p ./nginx/ssl/wsites &&
+          echo "$SSL" > ./nginx/ssl/wsites/ssl.json
 
       - name: Create tmp dir on digitalocean
         uses: appleboy/ssh-action@master
