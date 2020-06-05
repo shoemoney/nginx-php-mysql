@@ -96,8 +96,8 @@ DC_KEY
 #DC_PASS
 
 ## certificates to support https
-#written to ./nginx/ssl/[site].pem, mount to nginx-container /etc/nginx/ssl/*
-#written to ./nginx/ssl/[site].key, mount to nginx-container /etc/nginx/ssl/*
+#written to ./nginx/ssl/wsites/[site].pem, mount to nginx-container /etc/nginx/ssl/*
+#written to ./nginx/ssl/wsites/[site].key, mount to nginx-container /etc/nginx/ssl/*
 SSL 
 
 ## php mysql config

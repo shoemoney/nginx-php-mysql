@@ -37,6 +37,7 @@ try:
                     k_cert = cert.get('key', '')
                     key.write(k_cert if k_cert else '')
                     print(f"Written {ssl_dir}/{site}.key")
+    os.remove(os.path.join(ssl_dir, "ssl.json"))
 except Exception as e:
     print(e)
 
@@ -57,6 +58,7 @@ try:
                 with open(os.path.join(conf_dir, f".{site}passwd"), "w") as p:
                     p.write(passwd)
                     print(f"Written {conf_dir}/.{site}passwd")
+    os.remove(os.path.join(conf_dir, "auth.json"))
 except Exception as e:
     print(e)
 
