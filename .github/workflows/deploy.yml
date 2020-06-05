@@ -86,10 +86,9 @@ jobs:
           PORT: ${{ secrets.DC_PORT }}
           KEY: ${{ secrets.DC_KEY }}
           #PASSWORD: ${{ secrets.DC_PASS }}
-          envs: MYSQL_IP, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
+          envs: MYSQL_IP, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR
           script: |
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
-            cd $TARGET &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
             (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null || true)
 
@@ -125,7 +124,7 @@ jobs:
             export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
             export CURRENT_UID=$(id -u):$(id -g) &&
             docker-compose build --no-cache &&
-            cd $TARGET &&
+            mkdir $TARGET && cd $TARGET &&
             (docker-compose rm -f -s || true) &&
             (rm -rf ./* || true) &&
             mv $TMP_DIR $TARGET &&

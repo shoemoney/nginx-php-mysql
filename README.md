@@ -26,7 +26,7 @@ After that, allow docker run without sudo and add allowed users to docker group
 # sudo user, ref. https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-ubuntu-quickstart
 sudo adduser github
 # rights for user
-sudo chmod 777 -R /var/runner
+sudo chmod 777 -R /var/run
 sudo chmod 777 -R /tmp
 # ...
 
@@ -63,8 +63,24 @@ docker run -it --name github-runner \
     -v /var/run/docker.sock:/var/run/docker.sock \
     thuong/github-runner:latest
 ```
-**Open** [https://github.com/organizations/name/settings/actions](https://github.com/organizations/name/settings/actions) and check whether runner is ready
+**Open** [https://github.com/organizations/name/settings/actions](https://github.com/organizations/name/settings/actions) 
+and check whether runner is ready
 
+**SSH**
+```
+ref. https://www.howtogeek.com/168119/fixing-warning-unprotected-private-key-file-on-linux/
+su - github
+
+ssh-keygen
+
+# ~/.ssh/id_rsa for github secret setting
+cat ~/.ssh/id_rsa > ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+
+su - root
+sudo systemctl restart ssh
+```
 
 
 ## Secrets
@@ -324,6 +340,8 @@ Under "./.github/worflows/deploy.yml"
     * PHP_PARAMS to ./nginx/conf.d/credentials.conf
     * SERVER_KEY to ./nginx/ssl/server.key
     * SERVER_PEM to ./nginx/ssl/server.pem
+* SSH create tmp dir 
+    * TMP_DIR: ~/tmp/[organization]/[repo name]
 * Copy "." (all sources) to server, per scp, with secrets: DC_HOST, DC_KEY, DC_PORT, DC_USER
     * TARGET: ~/[organization]/[repo name]
 * Backup all database from mysql container
@@ -337,6 +355,7 @@ Under "./.github/worflows/deploy.yml"
     * Build: "docker-compose build --no-cache"                                                  
     * Remove: "docker-compose rm -f -s"
     * Create: "docker-compose up --renew-anon-volumes -d"
+    * Remove TMP_DIR
 * Allow permisson on target directory in server
     * TARGET: ~/[organization]/[repo name]
 * Restore all backup database to the new mysql container
