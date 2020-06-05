@@ -29,16 +29,14 @@ try:
             for site, cert in ssl.items():
                 if "rsa_cloudflare" == site:
                     continue
-                dir_name = os.path.join(ssl_dir, site)
-                mk_dir(dir_name)
-                with open(os.path.join(dir_name, "server.pem"), "w") as pem:
+                with open(os.path.join(ssl_dir, f"{site}.pem"), "w") as pem:
                     p_cert = cert.get('pem')
                     pem.write(f"{p_cert if p_cert else ''}{rsa}")
-                    print(f"Written {dir_name}/server.pem")
-                with open(os.path.join(dir_name, "server.key"), "w") as key:
+                    print(f"Written {ssl_dir}/{site}.pem")
+                with open(os.path.join(ssl_dir, f"{site}.key"), "w") as key:
                     k_cert = cert.get('key', '')
                     key.write(k_cert if k_cert else '')
-                    print(f"Written {dir_name}/server.key")
+                    print(f"Written {ssl_dir}/{site}.key")
 except Exception as e:
     print(e)
 
@@ -56,11 +54,9 @@ try:
             for site, passwd in auth.items():
                 if not passwd:
                     continue
-                dir_name = os.path.join(conf_dir, site)
-                mk_dir(dir_name)
-                with open(os.path.join(dir_name, f".{site}passwd"), "w") as p:
+                with open(os.path.join(conf_dir, f".{site}passwd"), "w") as p:
                     p.write(passwd)
-                    print(f"Written {dir_name}/.{site}passwd")
+                    print(f"Written {conf_dir}/.{site}passwd")
 except Exception as e:
     print(e)
 
