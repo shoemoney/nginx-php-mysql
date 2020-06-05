@@ -5,4 +5,6 @@ COPY ./sites-available/* /etc/nginx/sites-available/
 COPY ./conf.d /etc/nginx/conf.d
 COPY ./ssl /etc/nginx/ssl
 
+RUN ls -la /etc/nginx/conf.d
 RUN ls -la /etc/nginx/ssl
+
