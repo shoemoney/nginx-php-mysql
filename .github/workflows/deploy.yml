@@ -124,7 +124,7 @@ jobs:
             export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
             export CURRENT_UID=$(id -u):$(id -g) &&
             docker-compose build --no-cache &&
-            mkdir $TARGET && cd $TARGET &&
+            mkdir -p $TARGET && cd $TARGET &&
             (docker-compose rm -f -s || true) &&
             (rm -rf ./* || true) &&
             mv $TMP_DIR $TARGET &&
