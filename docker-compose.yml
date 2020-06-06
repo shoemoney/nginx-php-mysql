@@ -43,7 +43,6 @@ services:
       - PMA_ARBITRARY=1
       - PMA_HOST=${MYSQL_HOST}
       - PMA_ABSOLUTE_URI=${PMA_ABSOLUTE_URI}
-    working_dir: /var/www/html
     restart: unless-stopped
     depends_on:
       - mysql
