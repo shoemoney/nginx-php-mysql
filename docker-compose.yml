@@ -45,8 +45,6 @@ services:
       - PMA_ABSOLUTE_URI=${PMA_ABSOLUTE_URI}
     working_dir: /var/www/html
     restart: unless-stopped
-    volumes:
-      - "./www/phpmyadmin:/var/www/html"
     depends_on:
       - mysql
 
