@@ -180,6 +180,33 @@ fastcgi_param web1 'mysql:a_db:a_user:a_passwd';
 fastcgi_param web2 'mysql:b_db:b_user:b_passwd';
 ``` 
 
+##### SSL
+e.g.
+```json
+{
+  "cloudflare": {
+    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
+  },
+  "techignite.ga": {
+    "key": "-----BEGIN PRIVATE KEY-----xxx-----END PRIVATE KEY-----",
+    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
+  }
+}
+```
+
+##### SITE_AUTH
+```
+# create user:htpasswd for user
+htpasswd -n user
+# output [user]:[htpasswd]
+```
+
+e.g.
+```json
+{
+  "techignite.ga": "[user]:[htpasswd]"
+}
+```
 
 
 ## Configuration

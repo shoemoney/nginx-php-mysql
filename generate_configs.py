@@ -24,19 +24,17 @@ try:
         ssl = json.load(ssl_in)
         if ssl:
             print("Loaded ssl configs")
-            rsa = ssl.get("rsa_cloudflare")
-            rsa = rsa if rsa else ''
             for site, cert in ssl.items():
-                if "rsa_cloudflare" == site:
-                    continue
-                with open(os.path.join(ssl_dir, f"{site}.pem"), "w") as pem:
-                    p_cert = cert.get('pem')
-                    pem.write(f"{p_cert if p_cert else ''}{rsa}")
-                    print(f"Written {ssl_dir}/{site}.pem")
-                with open(os.path.join(ssl_dir, f"{site}.key"), "w") as key:
-                    k_cert = cert.get('key', '')
-                    key.write(k_cert if k_cert else '')
-                    print(f"Written {ssl_dir}/{site}.key")
+                p_cert = cert.get('pem')
+                if p_cert:
+                    with open(os.path.join(ssl_dir, f"{site}.pem"), "w") as pem:
+                        pem.write(p_cert)
+                        print(f"Written {ssl_dir}/{site}.pem")
+                k_cert = cert.get('key', '')
+                if k_cert:
+                    with open(os.path.join(ssl_dir, f"{site}.key"), "w") as key:
+                        key.write(k_cert)
+                        print(f"Written {ssl_dir}/{site}.key")
     os.remove(os.path.join(ssl_dir, "ssl.json"))
 except Exception as e:
     print(e)
