@@ -118,7 +118,7 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           envs: PMA_ABSOLUTE_URI, MYSQL_HOST, MYSQL_ROOT_PASSWORD, TMP_DIR, TARGET
           script: |
-            cd $TMP_DIR &&
+            cd $TMP_DIR && echo $PMA_ABSOLUTE_URI &&
             export PMA_ABSOLUTE_URI=$PMA_ABSOLUTE_URI &&
             export MYSQL_HOST=$MYSQL_HOST &&
             export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD &&
