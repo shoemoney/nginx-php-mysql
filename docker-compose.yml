@@ -12,14 +12,7 @@ services:
       - "./www:/var/www/html"
     ports:
       - "80:80"
-      - "88:88"
       - "443:443"
-      - "8443:8443"
-    expose:
-      - 80
-      - 88
-      - 443
-      - 8443
     restart: unless-stopped
     depends_on:
       - php
@@ -50,7 +43,10 @@ services:
       - PMA_ARBITRARY=1
       - PMA_HOST=${MYSQL_HOST}
       - PMA_ABSOLUTE_URI=${PMA_ABSOLUTE_URI}
+    working_dir: /var/www/html
     restart: unless-stopped
+    volumes:
+      - "./www/phpmyadmin:/var/www/html"
     depends_on:
       - mysql
 

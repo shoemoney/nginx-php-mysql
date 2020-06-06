@@ -10,6 +10,7 @@ nginx/conf.d/**/*.*passwd
 nginx/ssl/**/*.key
 nginx/ssl/**/*.pem
 nginx/ssl/**/*.json
+www/phpmyadmin
 
 .idea
 .env

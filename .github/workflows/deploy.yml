@@ -15,6 +15,7 @@ env:
   MYSQL_PORT: 3306
   MYSQL_USER: root
   MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+  MYSQL_DUMPS_DIR: "/home/github/backup/mysql"
   PMA_ABSOLUTE_URI: ${{ secrets.PMA_ABSOLUTE_URI }}
   MYSQL_INIT: ${{ secrets.MYSQL_INIT }}
   MYSQL_TEST: ${{ secrets.MYSQL_TEST }}
@@ -78,8 +79,6 @@ jobs:
 
       - name: Backup database on digitalocean
         uses: appleboy/ssh-action@master
-        env:
-          MYSQL_DUMPS_DIR: "${{ env.TMP_DIR }}/mysql/backup"
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -89,6 +88,7 @@ jobs:
           envs: MYSQL_IP, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR
           script: |
             echo $MYSQL_DUMPS_DIR/all_backups.sql &&
+            mkdir -p $MYSQL_DUMPS_DIR &&
             chmod -R 777 $MYSQL_DUMPS_DIR/ &&
             (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null || true)
 
@@ -145,8 +145,6 @@ jobs:
 
       - name: Restore database on digitalocean
         uses: appleboy/ssh-action@master
-        env:
-          MYSQL_DUMPS_DIR: "${{ env.TARGET }}/mysql/backup"
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
