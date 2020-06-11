@@ -174,15 +174,25 @@ MYSQL_ROOT_PASSWORD
 MYSQL_HOST
 ```
 
+##### DC_HOST
+```
+server_ip
+```
+
+##### DC_PORT
+```
+ssh_port, e.g. 25000
+```
+
+##### DC_USER
+```
+user, e.g. github
+```
+
 ##### DC_KEY
 e.g.
 ```
-# generate ssh key for github user
-su - github
-ssh-keygen
-
-# Paste private key in ~/.ssh/id_rsa to secret, DC_KEY
-cat ~/.ssh/id_rsa
+private_key, e.g. $server> cat ~/.ssh/id_rsa
 ```
 
 ##### DC_PASS
