@@ -17,30 +17,92 @@ sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
 
 ```
 
+### User github
+```
+## allow ssh,
+sudo nano /etc/ssh/sshd_config
+# Update content, uncomment/add
+-> Port 25000 # or any another port
+-> PermitRootLogin no
+-> AllowUsers github
+-> PubkeyAuthentication yes
+-> AuthorizedKeysFile	.ssh/authorized_keys .ssh/authorized_keys2
+# generate sshd dir
+sudo mkdir /var/run/sshd/
+# restart ssh
+sudo systemctl restart ssh
+# restart server
+shutdown -r now
+
+## create user
+# sudo user, ref. https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-ubuntu-quickstart
+sudo adduser github
+sudo usermod -aG root github
+sudo usermod -aG sudo github
+# generate key
+cd ~
+ssh-keygen
+cat ~/.ssh/id_rsa > ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+# copy ~/.ssh/id_rsa to local, save under ~/.ssh/github_xxx
+# On local machine
+chmod -R 600 ~/.ssh/github_xxx
+# restart ssh
+sudo systemctl restart ssh
+# restart server
+shutdown -r now
+# check ssh
+ssh github@ip -p 25000 -i ~/.ssh/github_xxx
+```
+
+**SSH**
+```
+ref. https://www.howtogeek.com/168119/fixing-warning-unprotected-private-key-file-on-linux/
+su - github
+
+ssh-keygen
+
+# ~/.ssh/id_rsa for DC_KEY of github secret setting
+cat ~/.ssh/id_rsa > ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/id_rsa
+chmod 600 ~/.ssh/id_rsa.pub
+
+su - root
+sudo systemctl restart ssh
+```
+
+### Mysql client
+```
+sudo apt install mysql-client-core-8.0 # Ubuntu 20.04
+```
+
 ### Docker
 [Docker on Ubuntu 20.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04)
 
 After that, allow docker run without sudo and add allowed users to docker group
 ```
-# create user
-# sudo user, ref. https://www.digitalocean.com/community/tutorials/how-to-create-a-sudo-user-on-ubuntu-quickstart
-sudo adduser github
-# rights for user
-sudo chmod 777 -R /var/run
-sudo chmod 777 -R /tmp
-# ...
-
-# add to docker group
+## add to docker group
 sudo usermod -aG docker github
+# check group
+groups github
 # login to github
 su - github
 # check github in docker group
 id -nG
 # docker helps without sudo
 docker --help
+
+# rights for user
+sudo chmod 777 -R /var/run
+sudo chmod 777 -R /tmp
+# ...
+
 ```
 
 ### Github-runner
+ONLY when runner still not be deployed and should be deployed on such the server 
+
 [Repo github-runner docker](https://github.com/cross-the-world/github-runner)
 
 **Add** these env variables to "~/.profile" 
@@ -65,22 +127,6 @@ docker run -it --name github-runner \
 ```
 **Open** [https://github.com/organizations/name/settings/actions](https://github.com/organizations/name/settings/actions) 
 and check whether runner is ready
-
-**SSH**
-```
-ref. https://www.howtogeek.com/168119/fixing-warning-unprotected-private-key-file-on-linux/
-su - github
-
-ssh-keygen
-
-# ~/.ssh/id_rsa for github secret setting
-cat ~/.ssh/id_rsa > ~/.ssh/authorized_keys
-chmod 600 ~/.ssh/id_rsa
-chmod 600 ~/.ssh/id_rsa.pub
-
-su - root
-sudo systemctl restart ssh
-```
 
 
 ## Secrets
@@ -112,15 +158,13 @@ PMA_ABSOLUTE_URI
 ## basic auth before opening site
 # written to ./nginx/conf.d/wsites/.[site]passwd, mount to nginx-container /etc/nginx/conf.d/
 #using on loading site with basic auth
-SITE_AUTH_A 
-SITE_AUTH_B 
-# ...
+SITE_AUTH
 
 ## mysql params
-# written to ./mysql/init/init.sql, mount to nginx-container /docker-entrypoint-initdb.d/
+# written to ./mysql/init/init.sql, mount to mysql-container /docker-entrypoint-initdb.d/
 # initialize database and privilliges for sites A,B,...
 MYSQL_INIT 
-# written to ./mysql/init/test.sql, mount to nginx-container /docker-entrypoint-initdb.d/
+# written to ./mysql/init/test.sql, mount to mysql-container /docker-entrypoint-initdb.d/
 # test whether sql script on triggered
 MYSQL_TEST
 # root pwd, e.g secret
@@ -139,6 +183,68 @@ ssh-keygen
 
 # Paste private key in ~/.ssh/id_rsa to secret, DC_KEY
 cat ~/.ssh/id_rsa
+```
+
+##### DC_PASS
+in case DC_PASS is not inuse 
+```
+xxx
+```
+
+##### SSL
+cloudflare is used only when 
+* SSLVerifyClient require
+* SSLCACertificateFile /usr/local/apache2/conf/certs/cloudflare.pem
+
+e.g. 
+```json
+{
+  "cloudflare": {
+    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
+  },
+  "domain1": {
+    "key": "-----BEGIN PRIVATE KEY-----xxx-----END PRIVATE KEY-----",
+    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
+  },
+  "domain2": {
+    "key": "-----BEGIN PRIVATE KEY-----xxx-----END PRIVATE KEY-----",
+    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
+  },
+  "...": {}
+}
+```
+
+##### PHP_PARAMS
+e.g.
+```
+# database credentials for web1
+fastcgi_param web1 'mysql:a_db:a_user:a_passwd';
+
+# database credentials for web1
+fastcgi_param web2 'mysql:b_db:b_user:b_passwd';
+``` 
+
+##### PMA_ABSOLUTE_URI
+e.g. consider ./apache/sites-available/pma.conf
+```
+http://pma.domain_name/server_name
+```
+
+##### SITE_AUTH
+generate passowrd with htpasswd
+```
+# create user:htpasswd for user
+htpasswd -n user
+# output [user]:[htpasswd]
+```
+
+e.g. add such
+```json
+{
+  "domain1": "[user]:[htpasswd]",
+  "domain2": "[user]:[htpasswd]",
+  "...": "..."
+}
 ```
 
 ##### MYSQL_INIT
@@ -171,47 +277,11 @@ echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
-##### PHP_PARAMS
-e.g.
-```
-# database credentials for web1
-fastcgi_param web1 'mysql:a_db:a_user:a_passwd';
 
-# database credentials for web1
-fastcgi_param web2 'mysql:b_db:b_user:b_passwd';
-``` 
-
-##### SSL
-e.g.
-```json
-{
-  "cloudflare": {
-    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
-  },
-  "domain": {
-    "key": "-----BEGIN PRIVATE KEY-----xxx-----END PRIVATE KEY-----",
-    "pem": "-----BEGIN CERTIFICATE-----xxx-----END CERTIFICATE-----"
-  }
-}
-```
-
-##### SITE_AUTH
-```
-# create user:htpasswd for user
-htpasswd -n user
-# output [user]:[htpasswd]
-```
-
-e.g.
-```json
-{
-  "domain": "[user]:[htpasswd]"
-}
-```
-
-
-## Configuration
+## New site
 for a NEW WEBSITE xxx
+
+### Configuration
 * Source code must be under "./www/xxx"
 * Nginx proxy configuration "./nginx/sites-available/xxx.conf", ref."./nginx/sites-available/A.conf" (considering http/https)
     ```
