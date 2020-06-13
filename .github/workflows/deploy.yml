@@ -47,7 +47,7 @@ jobs:
           echo "$SSL" > ./nginx/ssl/wsites/ssl.json
 
       - name: Create tmp dir on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -57,10 +57,10 @@ jobs:
           envs: TMP_DIR
           script: |
             mkdir -p $TMP_DIR &&
-            ((chmod -R 777 $TMP_DIR/) || true)
+            (chmod -R 777 $TMP_DIR/ || true)
 
       - name: Copy to DigitalOcean
-        uses: garygrossgarten/github-action-scp@release
+        uses: cross-the-world/scp-pipeline@master
         with:
           host: ${{ secrets.DC_HOST }}
           username: ${{ secrets.DC_USER }}
@@ -78,7 +78,7 @@ jobs:
           rm -rf ./nginx/ssl
 
       - name: Backup database on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -93,7 +93,7 @@ jobs:
             (mysqldump --all-databases -h $MYSQL_IP -P 3306 --protocol=tcp -u"root" -p"$MYSQL_ROOT_PASSWORD" > "$MYSQL_DUMPS_DIR/all_backups.sql" 2>/dev/null || true)
 
       - name: Generate configs on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -103,13 +103,13 @@ jobs:
           envs: TMP_DIR
           script: |
             cd $TMP_DIR &&
-            ((chmod -R 777 $TMP_DIR/) || true) &&
-            ((chmod +x $TMP_DIR/generate_configs.py) || true) &&
+            (chmod -R 777 $TMP_DIR/ || true) &&
+            (chmod +x $TMP_DIR/generate_configs.py || true) &&
             python3 --version &&
             python3 generate_configs.py
 
       - name: Deploy on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -131,7 +131,7 @@ jobs:
             (rm -rf $TMP_DIR || true)
 
       - name: Chmod on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -140,10 +140,10 @@ jobs:
           #PASSWORD: ${{ secrets.DC_PASS }}
           envs: TARGET
           script: |
-            ((chmod -R 777 $TARGET/) || true)
+            (chmod -R 777 $TARGET/ || true)
 
       - name: Restore database on digitalocean
-        uses: appleboy/ssh-action@master
+        uses: cross-the-world/ssh-pipeline@master
         with:
           HOST: ${{ secrets.DC_HOST }}
           USERNAME: ${{ secrets.DC_USER }}
@@ -153,6 +153,6 @@ jobs:
           envs: MYSQL_IP, MYSQL_PORT, MYSQL_USER, MYSQL_ROOT_PASSWORD, MYSQL_DUMPS_DIR, TARGET
           script: |
             cd $TARGET &&
-            ((chmod +x $TARGET/wait_for_restore.sh) || true) &&
-            $TARGET//wait_for_restore.sh $MYSQL_IP $MYSQL_PORT $MYSQL_USER $MYSQL_ROOT_PASSWORD "$MYSQL_DUMPS_DIR/all_backups.sql"
+            (chmod +x $TARGET/wait_for_restore.sh || true) &&
+            $TARGET/wait_for_restore.sh $MYSQL_IP $MYSQL_PORT $MYSQL_USER $MYSQL_ROOT_PASSWORD "$MYSQL_DUMPS_DIR/all_backups.sql"
 
